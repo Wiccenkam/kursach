@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace kursach.models
 {
-    class DataBaseModel
+    public class DataBaseModel
     {
         SqlConnection connection = new SqlConnection("Server=DESKTOP-OBD3GI2\\SQLEXPRESS;Database=Data1(kurs2);Trusted_Connection=True");
         public void OpenConnection()
