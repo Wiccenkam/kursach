@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,24 +55,23 @@ namespace kursach
             bool flag = false;
             if (IsUserExist())
                 return;
-            /*for (int i = 0; i < allUsers.Count; i++)
-            {
-                if (allUsers[i].login == login)
-                {
-                    MessageBox.Show("Users with this login alredy exists");
-                    textBoxLogin.Text = "";
-                    textBoxPassword.Text = "";
-                    textBoxPassword2.Text = "";
-                    return;
-                }
-            }*/
-
+       
             DataBaseModel dB = new DataBaseModel();
-            SqlCommand command = new SqlCommand("INSERT INTO users ( Login, Password) VALUES (@login, @password)", dB.getConnection());
+            SqlCommand command = new SqlCommand("INSERT INTO users ( Login, Password,Userdata) VALUES (@login, @password,@UserData)", dB.getConnection());
+            // путь к файлу для загрузки
+            string filename = @"C:\Users\andru\Desktop\Никита\Repos\kursach\kursach\bin\Debug\user.data";
+            byte[] imageData;
+            using (System.IO.FileStream fs = new System.IO.FileStream(filename, FileMode.Open))
+            {
+                imageData = new byte[fs.Length];
+                fs.Read(imageData, 0, imageData.Length);
+            }
             command.Parameters.Add("@login", SqlDbType.VarChar).Value = textBoxLogin.Text;
             command.Parameters.Add("@password", SqlDbType.VarChar).Value = textBoxPassword.Text;
+            command.Parameters.Add("@UserData", SqlDbType.VarBinary).Value = imageData;
 
-
+            
+         
 
             dB.OpenConnection();
 
@@ -90,7 +90,7 @@ namespace kursach
                 User user = new User();
                 user.login = login;
                 user.password = password;
-                User.SaveToLocalFile(user);
+                User.SaveToLocalFile(user,login);
                 MessageBox.Show("You was register");
                 this.Close();
             }

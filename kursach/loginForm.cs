@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -31,7 +32,7 @@ namespace kursach
 
             bool flag = false;
 
-            List<User> allUsers = User.GetUsersFromLocalFile();
+            /*List<User> allUsers = User.GetUsersFromLocalFile();
             for (int i = 0; i < allUsers.Count; i++)
             {
                 if (allUsers[i].login == login && allUsers[i].password == password)
@@ -39,6 +40,27 @@ namespace kursach
                     flag = true;
                     break;
                 }
+            }*/
+            DataBaseModel database = new DataBaseModel();
+
+            DataTable table = new DataTable();
+
+            SqlDataAdapter adapter = new SqlDataAdapter();
+
+            SqlCommand command = new SqlCommand("SELECT * FROM Users WHERE Login = @Login AND Password= @Pass", database.getConnection());
+            command.Parameters.Add("@Login", SqlDbType.VarChar).Value = textBoxLogin.Text;
+            command.Parameters.Add("@Pass", SqlDbType.VarChar).Value = textBoxPassword.Text;
+
+            adapter.SelectCommand = command;
+            adapter.Fill(table);
+            if (table.Rows.Count > 0)
+            {
+                MessageBox.Show("User allready exist");
+                flag = true;
+            }
+            else
+            {
+                MessageBox.Show("User not exist");
             }
 
             if (flag)
@@ -50,10 +72,7 @@ namespace kursach
                 ClearInput();
                 this.Show();
             }
-            else
-            {
-                MessageBox.Show("Wrong login or passwod");
-            }
+           
         }
         private void ClearInput()
         { 
